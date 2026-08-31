@@ -1,0 +1,413 @@
+/* ======================================================================
+   MOBILE-ONLY STYLES. Desktop has its own separate styles.css — editing
+   this file never affects the desktop layout, and vice versa.
+   ====================================================================== */
+
+:root{
+  --sky-top:#02030c;
+  --sky-mid:#0a1f4d;
+  --sky-bot:#153f82;
+  --ui-scale: clamp(0.42, min(calc(100vw / 1400px), calc(100vh / 720px)), 1.15);
+}
+
+*{box-sizing:border-box;}
+html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  background:var(--sky-top);
+  font-family:'Segoe UI','Trebuchet MS',Arial,sans-serif;
+  overflow:hidden;
+}
+
+#lockScreen{
+  position:fixed;inset:0;z-index:999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center, #1a1440 0%, #05061a 75%);
+  background-size:200% 200%;
+  animation:lockDrift 12s ease-in-out infinite;
+  padding:1rem;
+}
+@keyframes lockDrift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+#lockBox{
+  background:linear-gradient(180deg,#fff5fb,#ffe6f5);
+  border:6px solid #ffb3d9;
+  border-radius:32px;
+  box-shadow:0 0 0 4px #fff inset, 0 20px 60px rgba(0,0,0,.5), 0 0 40px #ff9ad8aa;
+  width:min(84vw,320px);
+  padding:1.7rem 1.4rem;
+  text-align:center;
+  position:relative;
+}
+#lockBox::before{
+  content:"🦄";display:block;font-size:2.7rem;margin-bottom:.4rem;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.2));
+}
+#lockBox h1{
+  font-family:'Mountains of Christmas', cursive;
+  font-size:1.5rem;color:#c2185b;margin:.2rem 0 1.1rem;line-height:1.25;
+}
+#lockBox input{
+  width:100%;padding:.75rem 1rem;border-radius:14px;
+  border:2px solid #ffb3d9;font-size:1rem;text-align:center;
+  outline:none;margin-bottom:.9rem;font-family:'Segoe UI','Trebuchet MS',Arial,sans-serif;
+}
+#lockBox input:focus{border-color:#ff5fa2;}
+#lockBox button{
+  width:100%;padding:.7rem 1rem;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#ff8fc7,#ff5fa2);
+  color:#fff;font-weight:700;font-size:1.1rem;letter-spacing:.03em;
+  font-family:'Fontdiner Swanky', cursive;
+  cursor:pointer;box-shadow:0 6px 14px rgba(255,95,162,.4);
+  transition:transform .15s ease;
+}
+#lockBox button:active{transform:scale(.96);}
+#lockError{color:#d90429;font-size:.85rem;margin-top:.6rem;height:1em;font-weight:600;}
+
+#site{
+  display:none;position:relative;
+  height:100vh;height:100dvh;
+  overflow:hidden;
+  background:
+    url('images/background.png') center bottom / cover no-repeat,
+    linear-gradient(180deg,var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-bot) 100%);
+  flex-direction:column;
+  justify-content:flex-end;
+}
+
+.star,.drop,.firefly,.petal{pointer-events:none;}
+
+.star{
+  position:absolute;background:#fff;border-radius:50%;z-index:2;
+  animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:1;}}
+
+.drop{
+  position:absolute;top:-5%;width:1px;height:60px;z-index:2;
+  background:linear-gradient(180deg,transparent,#bcd4ff88);
+  animation:fall linear infinite;
+}
+@keyframes fall{to{transform:translateY(115vh);}}
+
+.firefly{
+  position:absolute;width:5px;height:5px;border-radius:50%;z-index:2;
+  background:#ffe98a;box-shadow:0 0 8px 3px #ffe98a;
+  animation:flicker 3s ease-in-out infinite, drift 14s ease-in-out infinite;
+}
+@keyframes flicker{0%,100%{opacity:.15;}50%{opacity:1;}}
+@keyframes drift{
+  0%{transform:translate(0,0);}
+  25%{transform:translate(20px,-15px);}
+  50%{transform:translate(-10px,-30px);}
+  75%{transform:translate(-25px,-10px);}
+  100%{transform:translate(0,0);}
+}
+
+.petal{
+  position:absolute;top:-5%;z-index:2;
+  border-radius:0% 60% 0% 60%;
+  animation:petalFall linear infinite;
+  opacity:.92;
+}
+@keyframes petalFall{
+  0%{transform:translate(0,0) rotate(0deg);}
+  100%{transform:translate(60px,115vh) rotate(360deg);}
+}
+
+#musicBtn,#editModeBtn{
+  position:fixed;top:calc(10px + env(safe-area-inset-top));
+  z-index:9999;width:52px;height:52px;border-radius:50%;border:none;
+  background:#ffffff26;backdrop-filter:blur(6px);
+  color:#fff;font-size:1.35rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.4);
+}
+#musicBtn{ left:calc(10px + env(safe-area-inset-left)); }
+#editModeBtn{ left:calc(70px + env(safe-area-inset-left)); }
+#musicBtn.playing{animation:pulseBtn 1.6s ease-in-out infinite;}
+#editModeBtn.active{background:#ff5fa2cc;}
+@keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #ff5fa266;}50%{box-shadow:0 0 0 10px #ff5fa200;}}
+
+#layoutPanel{
+  display:none;position:fixed;right:10px;bottom:10px;z-index:9999;
+  width:min(90vw,320px);max-height:60vh;overflow:auto;
+  background:#0009;backdrop-filter:blur(6px);border-radius:12px;
+  padding:.6rem;color:#fff;font-size:.7rem;
+}
+#layoutPanel.show{display:block;}
+#layoutPanelHeader{
+  display:flex;align-items:center;justify-content:space-between;
+  font-weight:700;font-size:.75rem;
+}
+#layoutMinBtn{
+  width:26px;height:26px;border-radius:50%;border:none;
+  background:#ff5fa2;color:#fff;font-weight:800;font-size:.9rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+#layoutPanel.collapsed{ max-height:none; width:auto; padding:.5rem .7rem; }
+#layoutPanel.collapsed #layoutPanelBody{ display:none; }
+#layoutHint{opacity:.8;margin-bottom:.4rem;margin-top:.5rem;}
+#layoutOutput{white-space:pre-wrap;word-break:break-word;font-family:monospace;font-size:.68rem;}
+#copyLayoutBtn{margin-top:.4rem;width:100%;padding:.5rem;border:none;border-radius:8px;
+  background:#ff5fa2;color:#fff;font-weight:700;cursor:pointer;}
+
+/* ============ TITLE ============
+   Default position is a bit higher than dead-center (per request).
+   In edit mode (🖐️ button) it becomes draggable — tap-drag it anywhere
+   and script-mobile.js remembers where you put it for next time. */
+/* Moon decoration is a desktop-only feature — not shown on mobile. */
+#moonDecor, #moonResizeHandle{ display:none !important; }
+
+#hbTitle{
+  position:fixed;
+  left:50%;top:54%;
+  transform:translate(-50%,-50%);
+  width:min(78vw, 420px);
+  aspect-ratio:900/530;
+  margin:0;
+  background-image:url('images/hb-title-mobile.png');
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  text-indent:-9999px;overflow:visible; /* keeps "Happy Birthday!" text for screen readers, hidden visually */
+  filter:drop-shadow(0 0 22px #ff2d2d88) drop-shadow(0 0 42px #ff2d2d44);
+  animation:hbPulse 2.6s ease-in-out infinite;
+  z-index:50;
+  pointer-events:none;
+  touch-action:none;
+  user-select:none;
+}
+#hbTitle.editable{
+  pointer-events:auto;
+  cursor:grab;
+  outline:2px dashed #ffffff88;
+  outline-offset:8px;
+  border-radius:16px;
+  animation-play-state:paused; /* pulsing was making the resize handle a moving target on touch */
+  z-index:10000; /* while editing, must beat #layoutPanel (9999) too, or dragging silently fails wherever they overlap */
+}
+#hbTitle.dragging{ cursor:grabbing; animation-play-state:paused; }
+#titleResizeHandle{
+  position:fixed;
+  display:none;
+  align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:50%;
+  background:#ff5fa2;color:#fff;font-size:17px;font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
+  cursor:ns-resize;
+  z-index:10001; /* independent element now, so this actually reaches the top — beats #layoutPanel (9999) */
+}
+#hbTitle.editable ~ #titleResizeHandle{
+  display:flex;
+}
+@keyframes hbPulse{
+  0%,100%{transform:translate(-50%,-50%) scale(1); filter:drop-shadow(0 0 22px #ff2d2d88) drop-shadow(0 0 42px #ff2d2d44);}
+  50%{transform:translate(-50%,-50%) scale(1.06); filter:drop-shadow(0 0 32px #ff2d2dbb) drop-shadow(0 0 58px #ff2d2d66);}
+}
+
+#charLayer{
+  position:absolute;inset:0;z-index:9;pointer-events:none;
+}
+.charCard{
+  position:absolute;transform:translate(-50%,-50%);
+  cursor:pointer;user-select:none;pointer-events:auto;
+  transition:transform .2s ease, filter .2s ease;
+  touch-action:none;
+}
+.charCard:hover,.charCard:active{filter:brightness(1.08);}
+.charCard:not(.dragging):hover{transform:translate(-50%,-50%) translateY(-6px) scale(1.08);}
+.charCard.editable{ outline:2px dashed #ffffff88; outline-offset:4px; border-radius:14px; }
+.resizeHandle{ display:none; }
+.charCard.editable .resizeHandle{
+  display:flex;align-items:center;justify-content:center;
+  position:absolute;right:-10px;bottom:-10px;
+  width:22px;height:22px;border-radius:50%;
+  background:#ff5fa2;color:#fff;font-size:13px;font-weight:800;
+  box-shadow:0 2px 6px rgba(0,0,0,.4);
+  cursor:ns-resize;
+}
+.charCard.dragging{ filter:brightness(1.2) drop-shadow(0 0 10px #fff8); }
+.charCard img{
+  width:100%;display:block;border-radius:14px;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));
+  -webkit-user-drag:none;pointer-events:none;
+}
+.charFallback{
+  display:none;width:100%;aspect-ratio:2/3;border-radius:14px;
+  align-items:center;justify-content:center;text-align:center;
+  color:#fff;font-weight:700;font-size:.7rem;padding:6px;
+  box-shadow:0 8px 16px rgba(0,0,0,.55);
+}
+
+#balloonOverlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(4,5,20,.72);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s ease;
+}
+#balloonOverlay.show{opacity:1;pointer-events:auto;}
+#balloonFloatWrap{
+  display:flex;flex-direction:column;align-items:center;
+  transform:scale(.55);
+  transition:transform .32s cubic-bezier(.34,1.56,.64,1);
+}
+#balloonOverlay.show #balloonFloatWrap{transform:scale(1);}
+
+#balloonFloatWrap{ position:relative; }
+
+/* ============ BALLOON — one fixed round size/shape for every character ============
+   No JS resizing and no auto font-shrinking anymore — every balloon is
+   this exact size and shape, and each character's balloonFontSizeMobile
+   (characters-data.js) is applied exactly as given. If a message doesn't
+   fit, that character's number is what to edit — nothing here measures
+   or adjusts automatically. */
+#balloonModal{
+  width:min(84vw, 70dvh, 340px);
+  aspect-ratio:0.85;
+  border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:12% 13%;
+  overflow:visible;
+  font-weight:700;
+  box-shadow:inset -12px -16px 34px rgba(0,0,0,.18), inset 8px 10px 20px rgba(255,255,255,.22), 0 18px 40px rgba(0,0,0,.5);
+  position:relative;
+  animation:balloonFloat 4.2s ease-in-out infinite;
+}
+#balloonModal .msg{
+  font-family:'Segoe UI','Trebuchet MS',Arial,sans-serif;
+  font-weight:700;line-height:1.28;overflow:visible;
+  max-width:100%;
+}
+.nameLine{ font-weight:800; }
+.inlineIcon{ width:1.15em;height:1.15em;vertical-align:-0.2em;object-fit:contain; }
+
+/* X now floats OUTSIDE the circle (as a sibling of #balloonModal inside
+   #balloonFloatWrap, positioned relative to that wrapper) — it used to
+   be a child of #balloonModal, so the same overflow:hidden that clips
+   text to the round shape was also clipping the button. */
+.closeX{
+  position:absolute;top:-10px;right:-10px;
+  z-index:10;
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-weight:800;font-size:1.05rem;
+  border-radius:50%;
+  background:#fff;color:#333;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+  font-family:'Segoe UI','Trebuchet MS',Arial,sans-serif;
+}
+#balloonKnot{
+  width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;
+  border-top:16px solid; margin-top:-3px;
+}
+#balloonString{
+  width:2px;height:60px;background:#ffffff77;margin-top:-1px;border-radius:2px;
+  transform-origin:top center;
+  animation:stringSway 2.6s ease-in-out infinite;
+}
+/* No rotate() here anymore — animating rotation on an element containing
+   thin cursive-font strokes (the descenders on letters like y/p) is what
+   was causing those small gaps/breaks in the text. A plain vertical bob
+   doesn't have that problem. */
+@keyframes balloonFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-14px);}
+}
+@keyframes stringSway{
+  0%,100%{transform:rotate(-5deg);}
+  50%{transform:rotate(5deg);}
+}
+
+#grass{
+  position:relative;z-index:15;
+  height:12.5vh;min-height:70px;
+  flex:0 0 auto;
+  overflow:visible;
+  background:transparent;
+}
+.animal{
+  position:absolute;bottom:8%;cursor:pointer;z-index:10;
+  /* manipulation = no browser tap-delay / scroll-gesture interference,
+     which was causing taps on a mid-walk (moving) animal to sometimes
+     get dropped before the pose could trigger */
+  touch-action:manipulation;
+}
+.animalBody{
+  aspect-ratio:1/1;
+  display:flex;align-items:flex-end;justify-content:center;
+  transition:transform .3s ease;
+  filter:drop-shadow(0 6px 6px rgba(0,0,0,.4));
+  animation:bob 1.4s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.animalBody.posing{animation:none;}
+.animalBody img{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none;}
+.animalFallback{display:block;line-height:1;}
+.pawprint{position:absolute;pointer-events:none;z-index:6;line-height:0;
+  animation:pawFade 8s ease-out forwards;}
+@keyframes pawFade{0%{opacity:1;}75%{opacity:.6;}100%{opacity:0;}}
+
+/* The animal thought-bubble is images/thought-bubble-left.png or
+   thought-bubble-right.png (picked by facing direction in script-mobile.js)
+   — the message and each variant's own tail are baked into that artwork,
+   so there's no separate text/icon/tail styling needed here.
+
+   left/top only ever get set by JS at the moment an animal is tapped
+   (triggerPose in script-mobile.js). Before that first tap, "left/top:
+   auto" on a position:fixed element resolves to wherever it would have
+   landed in normal document flow, transform:translate(-50%,-100%) is
+   then applied on TOP of that unpredictable spot — opacity:0 was
+   supposed to hide it regardless, but as an extra guarantee this now
+   also starts pinned off-screen and visibility:hidden, so it truly
+   cannot be seen anywhere until a real position is set. */
+#animalBubble{
+  position:fixed;z-index:55;
+  top:-9999px;left:-9999px;
+  transform:translate(-50%,-100%) scale(0.9);
+  transform-origin:bottom center;
+  width:clamp(220px, 58vw, 320px);
+  min-height:90px;
+  opacity:0;
+  visibility:hidden;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s linear .25s;
+  pointer-events:none;
+}
+.animalBubbleImg{
+  display:block;
+  width:100%;
+  height:auto;
+}
+#animalBubble.show{
+  visibility:visible;
+  transform:translate(-50%,-100%) scale(1);opacity:1;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s;
+}
+#animalBubble.hide{opacity:0;transform:translate(-50%,-100%) scale(0.85);}
+
+footer{
+  position:relative;z-index:5;text-align:center;color:#ffffff77;
+  font-size:.65rem;padding:.3rem 0;flex:0 0 auto;
+}
+
+.shootingStar{
+  position:fixed;
+  width:3px;height:3px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 8px 2px rgba(255,255,255,.9), 0 0 18px 5px rgba(255,255,255,.5);
+  z-index:300;
+  pointer-events:none;
+  transform-origin:left center;
+}
+.shootingStar::before{
+  content:"";
+  position:absolute;
+  top:50%;right:100%;
+  transform:translateY(-50%);
+  width:100px;height:2px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.85));
+  border-radius:2px;
+}

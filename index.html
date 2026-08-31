@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>It's Your Birthday! 🐱🎂✨🎉🎊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Henny+Penny&family=Allura&family=Emilys+Candy&family=Crafty+Girls&family=Snowburst+One&family=Atma&family=Englebert&family=Jim+Nightshade&family=Sniglet&family=Ruge+Boogie&family=Butterfly+Kids&family=Mystery+Quest&family=Damion&family=Mountains+of+Christmas&family=Fontdiner+Swanky&family=Rock+Salt&family=Comforter+Brush&family=Liu+Jian+Mao+Cao&family=Indie+Flower&family=Sunshiney&family=Sue+Ellen+Francisco&display=block" rel="stylesheet">
+<!-- CSS split by real screen width using the browser's own media-query
+     matching on the <link> tag itself — no JS involved, so this can't
+     ever pick the wrong file or race against anything. Desktop only
+     ever downloads/applies styles.css; mobile only styles-mobile.css. -->
+<link rel="stylesheet" href="styles.css?v=8" media="(min-width: 481px)">
+<link rel="stylesheet" href="styles-mobile.css?v=8" media="(max-width: 480px)">
+</head>
+<body>
+
+  <!-- ============ PASSWORD LOCK SCREEN ============ -->
+  <div id="lockScreen">
+    <div id="lockBox">
+      <h1>Enter the password<br>for your surprise</h1>
+      <input id="pwInput" type="password" placeholder="password" autocomplete="off">
+      <button id="unlockBtn">Unlock 🎁</button>
+      <div id="lockError"></div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN SITE ============ -->
+  <div id="site">
+    <button id="musicBtn" title="Play music">🎵</button>
+    <button id="editModeBtn" title="Toggle position-editing mode">🖐️</button>
+    <audio id="bgMusic" loop preload="none"></audio>
+
+    <h1 id="hbTitle">Happy Birthday!</h1>
+    <div class="resizeHandle" id="titleResizeHandle" aria-hidden="true">↕</div>
+    <img id="moonDecor" src="images/oreo_moon.png" alt="" aria-hidden="true"
+         onerror="this.style.display='none'">
+    <div class="resizeHandle" id="moonResizeHandle" aria-hidden="true">↕</div>
+
+    <div id="charLayer"></div>
+
+    <div id="grass"></div>
+    <div id="animalBubble"></div>
+
+    <div id="layoutPanel">
+      <div id="layoutPanelHeader">Layout Editor <button id="layoutMinBtn">➖</button></div>
+      <div id="layoutPanelBody">
+        <div id="layoutHint">Drag a character (or the title) to move · scroll over a character to resize · click to bring to front</div>
+        <pre id="layoutOutput"></pre>
+        <button id="copyLayoutBtn">Copy layout code</button>
+      </div>
+    </div>
+
+    <footer>made by your eyesonMe 💕</footer>
+
+    <div id="balloonOverlay">
+      <div id="balloonFloatWrap">
+        <div id="balloonModal">
+          <span class="closeX" id="balloonClose">✕</span>
+          <div class="msg" id="balloonMsg"></div>
+        </div>
+        <div class="knot" id="balloonKnot"></div>
+        <div class="string" id="balloonString"></div>
+      </div>
+    </div>
+  </div>
+
+<script src="characters-data.js?v=8"></script>
+<script>
+  /* Same device decision as the CSS above, made once here too, since a
+     <script src> can't be conditionally selected with a media attribute
+     the way a stylesheet can. Loaded via a normal created <script> tag
+     (not document.write, which has known reliability issues — it can
+     silently no-op depending on how/when the page loaded) so this
+     reliably fetches exactly one of the two device scripts. Because
+     script.js and script-mobile.js both declare top-level consts of the
+     same names, they must never both load on the same page. */
+  (function loadDeviceScript(){
+    var isMobile = window.matchMedia("(max-width: 480px)").matches;
+    var s = document.createElement("script");
+    s.src = (isMobile ? "script-mobile.js" : "script.js") + "?v=8";
+    document.body.appendChild(s);
+  })();
+</script>
+</body>
+</html>
+
