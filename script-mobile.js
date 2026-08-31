@@ -44,7 +44,7 @@ const LAYOUT = LAYOUT_MOBILE;
 // directly, OR use 🖐️ edit mode — the title can now be both dragged AND
 // scroll-resized just like a character, and "Copy layout code" includes
 // its current position + size.
-const TITLE_MOBILE = { x: 54.2, y: 548.6, width: 560 };
+const TITLE_MOBILE = { x: 54.2, y: 48.6, width: 560 };
 
 // Fallback only — every character in characters-data.js has its own
 // balloonFontSizeMobile now, this is just a safety net if one is missing.
