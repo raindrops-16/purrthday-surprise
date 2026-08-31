@@ -8,10 +8,10 @@ const SITE_PASSWORD = "CellsAtWork";
 const MUSIC_FILE = "birthday-ost.mp3";
 
 const LAYOUT_DESKTOP = {
-  "yukari": { x: 46.0, y: 29.3, width: 251, z: 28 },
-  "kurumu": { x: 33.0, y: 27.8, width: 249, z: 26 },
-  "mizore": { x: 57.4, y: 27.0, width: 217, z: 21 },
-  "tsukune": { x: 67.1, y: 27.0, width: 214, z: 29 },
+  "yukari": { x: 44.0, y: 26.3, width: 251, z: 24 },
+  "kurumu": { x: 32.2, y: 23.5, width: 249, z: 21 },
+  "mizore": { x: 54.9, y: 24.0, width: 217, z: 25 },
+  "tsukune": { x: 66.0, y: 24.3, width: 214, z: 26 },
   "moka-inner": { x: 21.6, y: 52.6, width: 330, z: 21 },
   "moka-outer": { x: 76.6, y: 55.9, width: 220, z: 23 },
   "winnie-pooh": { x: 89.3, y: 35.5, width: 235, z: 22 },
