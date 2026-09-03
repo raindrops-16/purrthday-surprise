@@ -1,3 +1,4 @@
+
 :root{
   --sky-top:#02030c;
   --sky-mid:#0a1f4d;
@@ -110,48 +111,22 @@ html,body{
   100%{transform:translate(60px,115vh) rotate(360deg);}
 }
 
-#musicBtn,#editModeBtn{
+#musicBtn{
   position:fixed;top:calc(10px + env(safe-area-inset-top));
+  left:calc(10px + env(safe-area-inset-left));
   z-index:9999;width:52px;height:52px;border-radius:50%;border:none;
   background:#ffffff26;backdrop-filter:blur(6px);
   color:#fff;font-size:1.35rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 14px rgba(0,0,0,.4);
 }
-#musicBtn{ left:calc(10px + env(safe-area-inset-left)); }
-#editModeBtn{ left:calc(70px + env(safe-area-inset-left)); }
 #musicBtn.playing{animation:pulseBtn 1.6s ease-in-out infinite;}
-#editModeBtn.active{background:#ff5fa2cc;}
 @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #ff5fa266;}50%{box-shadow:0 0 0 10px #ff5fa200;}}
 
-#layoutPanel{
-  display:none;position:fixed;right:10px;bottom:10px;z-index:9999;
-  width:min(90vw,320px);max-height:60vh;overflow:auto;
-  background:#0009;backdrop-filter:blur(6px);border-radius:12px;
-  padding:.6rem;color:#fff;font-size:.7rem;
-}
-#layoutPanel.show{display:block;}
-#layoutPanelHeader{
-  display:flex;align-items:center;justify-content:space-between;
-  font-weight:700;font-size:.75rem;
-}
-#layoutMinBtn{
-  width:26px;height:26px;border-radius:50%;border:none;
-  background:#ff5fa2;color:#fff;font-weight:800;font-size:.9rem;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-}
-#layoutPanel.collapsed{ max-height:none; width:auto; padding:.5rem .7rem; }
-#layoutPanel.collapsed #layoutPanelBody{ display:none; }
-#layoutHint{opacity:.8;margin-bottom:.4rem;margin-top:.5rem;}
-#layoutOutput{white-space:pre-wrap;word-break:break-word;font-family:monospace;font-size:.68rem;}
-#copyLayoutBtn{margin-top:.4rem;width:100%;padding:.5rem;border:none;border-radius:8px;
-  background:#ff5fa2;color:#fff;font-weight:700;cursor:pointer;}
-
-/* ============ MOON DECORATION (placeholder slot) ============
-   Empty/invisible until images/moon.png exists (the onerror handler in
-   the HTML hides it), but fully positionable right now via 🖐️ edit
-   mode — same drag-to-move + drag-handle-to-resize pattern as the
-   characters. */
+/* ============ MOON DECORATION ============
+   Position/size are locked in via MOON_DESKTOP in script.js. No longer
+   interactively draggable — if you want to move it again later, just
+   hand-edit MOON_DESKTOP's x/y/width values directly. */
 #moonDecor{
   position:fixed;
   transform:translate(-50%,-50%);
@@ -160,25 +135,6 @@ html,body{
   user-select:none;
   -webkit-user-drag:none;
 }
-#moonDecor.editable{
-  pointer-events:auto;
-  cursor:grab;
-  outline:2px dashed #ffffff88;
-  outline-offset:6px;
-  border-radius:50%;
-}
-#moonDecor.dragging{ cursor:grabbing; }
-#moonResizeHandle{
-  position:fixed;
-  display:none;
-  align-items:center;justify-content:center;
-  width:22px;height:22px;border-radius:50%;
-  background:#ff5fa2;color:#fff;font-size:13px;font-weight:800;
-  box-shadow:0 2px 6px rgba(0,0,0,.4);
-  cursor:ns-resize;
-  z-index:9999;
-}
-#moonDecor.editable ~ #moonResizeHandle{ display:flex; }
 
 #hbTitle{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
@@ -208,19 +164,10 @@ html,body{
   transition:transform .2s ease, filter .2s ease;
   touch-action:none;
 }
-.charCard:hover,.charCard:active{filter:brightness(1.08);}
-.charCard:not(.dragging):hover{transform:translate(-50%,-50%) translateY(-6px) scale(1.08);}
-.charCard.editable{ outline:2px dashed #ffffff88; outline-offset:4px; border-radius:14px; }
-.resizeHandle{ display:none; }
-.charCard.editable .resizeHandle{
-  display:flex;align-items:center;justify-content:center;
-  position:absolute;right:-10px;bottom:-10px;
-  width:22px;height:22px;border-radius:50%;
-  background:#ff5fa2;color:#fff;font-size:13px;font-weight:800;
-  box-shadow:0 2px 6px rgba(0,0,0,.4);
-  cursor:ns-resize;
+.charCard:hover{
+  transform:translate(-50%,-50%) translateY(-6px) scale(1.08);
+  filter:brightness(1.08);
 }
-.charCard.dragging{ filter:brightness(1.2) drop-shadow(0 0 10px #fff8); }
 .charCard img{
   width:100%;display:block;border-radius:14px;
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));
@@ -318,8 +265,8 @@ html,body{
 
 /* The animal thought-bubble is images/thought-bubble-left.png or
    thought-bubble-right.png (picked by facing direction in script.js) —
-   this size — the message and each variant's own tail are baked into
-   that artwork, so there's no separate text/icon/tail styling needed here. */
+   the message and each variant's own tail are baked into that artwork,
+   so there's no separate text/icon/tail styling needed here. */
 #animalBubble{
   position:fixed;z-index:55;
   transform:translate(-50%,-100%) scale(0.9);
@@ -370,3 +317,4 @@ footer{
   #lockBox h1{ font-size:1.5rem; }
   #lockBox button{ font-size:1.1rem; padding:.7rem 1rem; }
 }
+
