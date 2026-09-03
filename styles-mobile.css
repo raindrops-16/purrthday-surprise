@@ -1,3 +1,4 @@
+
 /* ======================================================================
    MOBILE-ONLY STYLES. Desktop has its own separate styles.css — editing
    this file never affects the desktop layout, and vice versa.
@@ -115,49 +116,20 @@ html,body{
   100%{transform:translate(60px,115vh) rotate(360deg);}
 }
 
-#musicBtn,#editModeBtn{
+#musicBtn{
   position:fixed;top:calc(10px + env(safe-area-inset-top));
+  left:calc(10px + env(safe-area-inset-left));
   z-index:9999;width:52px;height:52px;border-radius:50%;border:none;
   background:#ffffff26;backdrop-filter:blur(6px);
   color:#fff;font-size:1.35rem;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 4px 14px rgba(0,0,0,.4);
 }
-#musicBtn{ left:calc(10px + env(safe-area-inset-left)); }
-#editModeBtn{ left:calc(70px + env(safe-area-inset-left)); }
 #musicBtn.playing{animation:pulseBtn 1.6s ease-in-out infinite;}
-#editModeBtn.active{background:#ff5fa2cc;}
 @keyframes pulseBtn{0%,100%{box-shadow:0 0 0 0 #ff5fa266;}50%{box-shadow:0 0 0 10px #ff5fa200;}}
 
-#layoutPanel{
-  display:none;position:fixed;right:10px;bottom:10px;z-index:9999;
-  width:min(90vw,320px);max-height:60vh;overflow:auto;
-  background:#0009;backdrop-filter:blur(6px);border-radius:12px;
-  padding:.6rem;color:#fff;font-size:.7rem;
-}
-#layoutPanel.show{display:block;}
-#layoutPanelHeader{
-  display:flex;align-items:center;justify-content:space-between;
-  font-weight:700;font-size:.75rem;
-}
-#layoutMinBtn{
-  width:26px;height:26px;border-radius:50%;border:none;
-  background:#ff5fa2;color:#fff;font-weight:800;font-size:.9rem;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-}
-#layoutPanel.collapsed{ max-height:none; width:auto; padding:.5rem .7rem; }
-#layoutPanel.collapsed #layoutPanelBody{ display:none; }
-#layoutHint{opacity:.8;margin-bottom:.4rem;margin-top:.5rem;}
-#layoutOutput{white-space:pre-wrap;word-break:break-word;font-family:monospace;font-size:.68rem;}
-#copyLayoutBtn{margin-top:.4rem;width:100%;padding:.5rem;border:none;border-radius:8px;
-  background:#ff5fa2;color:#fff;font-weight:700;cursor:pointer;}
-
-/* ============ TITLE ============
-   Default position is a bit higher than dead-center (per request).
-   In edit mode (🖐️ button) it becomes draggable — tap-drag it anywhere
-   and script-mobile.js remembers where you put it for next time. */
 /* Moon decoration is a desktop-only feature — not shown on mobile. */
-#moonDecor, #moonResizeHandle{ display:none !important; }
+#moonDecor{ display:none !important; }
 
 #hbTitle{
   position:fixed;
@@ -175,31 +147,7 @@ html,body{
   animation:hbPulse 2.6s ease-in-out infinite;
   z-index:50;
   pointer-events:none;
-  touch-action:none;
   user-select:none;
-}
-#hbTitle.editable{
-  pointer-events:auto;
-  cursor:grab;
-  outline:2px dashed #ffffff88;
-  outline-offset:8px;
-  border-radius:16px;
-  animation-play-state:paused; /* pulsing was making the resize handle a moving target on touch */
-  z-index:10000; /* while editing, must beat #layoutPanel (9999) too, or dragging silently fails wherever they overlap */
-}
-#hbTitle.dragging{ cursor:grabbing; animation-play-state:paused; }
-#titleResizeHandle{
-  position:fixed;
-  display:none;
-  align-items:center;justify-content:center;
-  width:38px;height:38px;border-radius:50%;
-  background:#ff5fa2;color:#fff;font-size:17px;font-weight:800;
-  box-shadow:0 2px 8px rgba(0,0,0,.5);
-  cursor:ns-resize;
-  z-index:10001; /* independent element now, so this actually reaches the top — beats #layoutPanel (9999) */
-}
-#hbTitle.editable ~ #titleResizeHandle{
-  display:flex;
 }
 @keyframes hbPulse{
   0%,100%{transform:translate(-50%,-50%) scale(1); filter:drop-shadow(0 0 22px #ff2d2d88) drop-shadow(0 0 42px #ff2d2d44);}
@@ -215,19 +163,10 @@ html,body{
   transition:transform .2s ease, filter .2s ease;
   touch-action:none;
 }
-.charCard:hover,.charCard:active{filter:brightness(1.08);}
-.charCard:not(.dragging):hover{transform:translate(-50%,-50%) translateY(-6px) scale(1.08);}
-.charCard.editable{ outline:2px dashed #ffffff88; outline-offset:4px; border-radius:14px; }
-.resizeHandle{ display:none; }
-.charCard.editable .resizeHandle{
-  display:flex;align-items:center;justify-content:center;
-  position:absolute;right:-10px;bottom:-10px;
-  width:22px;height:22px;border-radius:50%;
-  background:#ff5fa2;color:#fff;font-size:13px;font-weight:800;
-  box-shadow:0 2px 6px rgba(0,0,0,.4);
-  cursor:ns-resize;
+.charCard:hover{
+  transform:translate(-50%,-50%) translateY(-6px) scale(1.08);
+  filter:brightness(1.08);
 }
-.charCard.dragging{ filter:brightness(1.2) drop-shadow(0 0 10px #fff8); }
 .charCard img{
   width:100%;display:block;border-radius:14px;
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.55));
@@ -284,7 +223,7 @@ html,body{
 .nameLine{ font-weight:800; }
 .inlineIcon{ width:1.15em;height:1.15em;vertical-align:-0.2em;object-fit:contain; }
 
-/* X now floats OUTSIDE the circle (as a sibling of #balloonModal inside
+/* X floats OUTSIDE the circle (as a sibling of #balloonModal inside
    #balloonFloatWrap, positioned relative to that wrapper) — it used to
    be a child of #balloonModal, so the same overflow:hidden that clips
    text to the round shape was also clipping the button. */
@@ -308,10 +247,6 @@ html,body{
   transform-origin:top center;
   animation:stringSway 2.6s ease-in-out infinite;
 }
-/* No rotate() here anymore — animating rotation on an element containing
-   thin cursive-font strokes (the descenders on letters like y/p) is what
-   was causing those small gaps/breaks in the text. A plain vertical bob
-   doesn't have that problem. */
 @keyframes balloonFloat{
   0%,100%{transform:translateY(0);}
   50%{transform:translateY(-14px);}
@@ -330,9 +265,6 @@ html,body{
 }
 .animal{
   position:absolute;bottom:8%;cursor:pointer;z-index:10;
-  /* manipulation = no browser tap-delay / scroll-gesture interference,
-     which was causing taps on a mid-walk (moving) animal to sometimes
-     get dropped before the pose could trigger */
   touch-action:manipulation;
 }
 .animalBody{
@@ -356,13 +288,9 @@ html,body{
    so there's no separate text/icon/tail styling needed here.
 
    left/top only ever get set by JS at the moment an animal is tapped
-   (triggerPose in script-mobile.js). Before that first tap, "left/top:
-   auto" on a position:fixed element resolves to wherever it would have
-   landed in normal document flow, transform:translate(-50%,-100%) is
-   then applied on TOP of that unpredictable spot — opacity:0 was
-   supposed to hide it regardless, but as an extra guarantee this now
-   also starts pinned off-screen and visibility:hidden, so it truly
-   cannot be seen anywhere until a real position is set. */
+   (triggerPose in script-mobile.js). Before that first tap, it starts
+   pinned off-screen and visibility:hidden, so it truly cannot be seen
+   anywhere until a real position is set. */
 #animalBubble{
   position:fixed;z-index:55;
   top:-9999px;left:-9999px;
@@ -411,3 +339,4 @@ footer{
   background:linear-gradient(90deg, transparent, rgba(255,255,255,.85));
   border-radius:2px;
 }
+
