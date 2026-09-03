@@ -1,3 +1,4 @@
+
 /* ======================================================================
    MOBILE-ONLY SCRIPT. Desktop has its own separate script.js — editing
    this file never affects the desktop layout, and vice versa.
@@ -38,12 +39,9 @@ const LAYOUT_MOBILE = {
 };
 const LAYOUT = LAYOUT_MOBILE;
 
-// Position AND size of the "Happy Birthday!" title, same idea as
-// LAYOUT_MOBILE above: x/y are the center as a % of the screen, width is
-// in px (same reference scale as character widths). Edit these numbers
-// directly, OR use 🖐️ edit mode — the title can now be both dragged AND
-// scroll-resized just like a character, and "Copy layout code" includes
-// its current position + size.
+// Final position/size of the "Happy Birthday!" title. No longer
+// interactively draggable/resizable — to move or resize it later, just
+// change these numbers directly and re-upload.
 const TITLE_MOBILE = { x: 54.2, y: 48.6, width: 560 };
 
 // Fallback only — every character in characters-data.js has its own
@@ -79,135 +77,12 @@ function tryUnlock(){
   }
 }
 
-let editMode = false;
-let zCounter = 20;
-
-document.getElementById("editModeBtn").addEventListener("click", ()=>{
-  editMode = !editMode;
-  document.getElementById("editModeBtn").classList.toggle("active", editMode);
-  const panel = document.getElementById("layoutPanel");
-  panel.classList.toggle("show", editMode);
-  if(editMode) panel.classList.remove("collapsed");
-  document.querySelectorAll(".charCard").forEach(c => c.classList.toggle("editable", editMode));
-  document.getElementById("hbTitle").classList.toggle("editable", editMode);
-  refreshLayoutOutput();
-});
-
-document.getElementById("layoutMinBtn").addEventListener("click", ()=>{
-  const panel = document.getElementById("layoutPanel");
-  const collapsing = !panel.classList.contains("collapsed");
-  panel.classList.toggle("collapsed", collapsing);
-  document.getElementById("layoutMinBtn").textContent = collapsing ? "➕" : "➖";
-});
-
-document.getElementById("copyLayoutBtn").addEventListener("click", ()=>{
-  const text = document.getElementById("layoutOutput").textContent;
-  navigator.clipboard?.writeText(text);
-  const btn = document.getElementById("copyLayoutBtn");
-  const original = btn.textContent;
-  btn.textContent = "Copied!";
-  setTimeout(()=>{ btn.textContent = original; }, 1200);
-});
-
-function refreshLayoutOutput(){
-  const lines = Object.keys(LAYOUT).map(key=>{
-    const p = LAYOUT[key];
-    return ` "${key}": { x: ${p.x.toFixed(1)}, y: ${p.y.toFixed(1)}, width: ${Math.round(p.width)}, z: ${p.z} },`;
-  });
-  document.getElementById("layoutOutput").textContent =
-`// Replace the body of the existing "const LAYOUT_MOBILE = {...}" object
-// in script-mobile.js with these lines.
-const LAYOUT_MOBILE = {
-${lines.join("\n")}
-};
-
-// Replace the existing "const TITLE_MOBILE = {...}" line with this one.
-const TITLE_MOBILE = { x: ${TITLE_MOBILE.x.toFixed(1)}, y: ${TITLE_MOBILE.y.toFixed(1)}, width: ${Math.round(TITLE_MOBILE.width)} };`;
-}
-
-/* ---------- draggable + resizable "Happy Birthday!" title (edit mode only) ----------
-   Applies TITLE_MOBILE on load. In edit mode: drag to move, drag the
-   handle to resize — same pattern as the characters/moon, so there's one
-   consistent place (script-mobile.js) to find and hand-edit every
-   coordinate and size on the site.
-
-   The handle is a separate fixed-position element (not nested inside
-   #hbTitle) tracked via getBoundingClientRect(), same approach as the
-   moon's handle on desktop — nesting it inside the title trapped it in
-   the title's own stacking context, so no z-index on the handle could
-   ever beat sibling UI like the Layout Editor panel, which was silently
-   eating every tap on it. */
-function positionTitleResizeHandle(){
-  const title = document.getElementById("hbTitle");
-  const handle = document.getElementById("titleResizeHandle");
-  const rect = title.getBoundingClientRect();
-  handle.style.left = (rect.right - 12) + "px";
-  handle.style.top = (rect.bottom - 12) + "px";
-}
-
+/* Title position — locked in from TITLE_MOBILE above. */
 function applyTitlePosition(){
   const title = document.getElementById("hbTitle");
   title.style.left = TITLE_MOBILE.x + "%";
   title.style.top = TITLE_MOBILE.y + "%";
   title.style.width = `calc(var(--ui-scale) * ${TITLE_MOBILE.width}px)`;
-  positionTitleResizeHandle();
-}
-
-function initDraggableTitle(){
-  const title = document.getElementById("hbTitle");
-  const resizeHandle = document.getElementById("titleResizeHandle");
-  applyTitlePosition();
-
-  title.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    title.classList.add("dragging");
-    const onMove = ev=>{
-      const x = Math.max(0, Math.min(100, (ev.clientX / window.innerWidth) * 100));
-      const y = Math.max(0, Math.min(100, (ev.clientY / window.innerHeight) * 100));
-      TITLE_MOBILE.x = x;
-      TITLE_MOBILE.y = y;
-      title.style.left = x + "%";
-      title.style.top = y + "%";
-      positionTitleResizeHandle();
-    };
-    const onUp = ()=>{
-      title.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-      refreshLayoutOutput();
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  // Touch-friendly resize handle — "wheel" (mouse scroll) doesn't exist
-  // as a gesture on a touchscreen, which is why resizing wasn't working
-  // on mobile originally. Drag this handle instead, same as characters.
-  resizeHandle.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-    title.classList.add("dragging");
-    const startX = e.clientX;
-    const startWidth = TITLE_MOBILE.width;
-    const onMove = ev=>{
-      const delta = (ev.clientX - startX) * 0.5;
-      TITLE_MOBILE.width = Math.max(120, startWidth + delta);
-      title.style.width = `calc(var(--ui-scale) * ${TITLE_MOBILE.width}px)`;
-      positionTitleResizeHandle();
-      refreshLayoutOutput();
-    };
-    const onUp = ()=>{
-      title.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  window.addEventListener("resize", positionTitleResizeHandle);
 }
 
 function applyPosition(card, pos){
@@ -224,78 +99,9 @@ function makeCard(c){
   card.innerHTML = `
     <img src="images/${c.img}" alt="${c.name}"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="charFallback" style="background:${c.color}">${c.name}</div>
-    <div class="resizeHandle" aria-hidden="true">↕</div>`;
+    <div class="charFallback" style="background:${c.color}">${c.name}</div>`;
   applyPosition(card, pos);
-
-  card.addEventListener("click", e=>{
-    if(editMode){
-      e.stopPropagation();
-      zCounter++;
-      pos.z = zCounter;
-      card.style.zIndex = pos.z;
-      refreshLayoutOutput();
-      return;
-    }
-    openBalloon(c);
-  });
-
-  const resizeHandle = card.querySelector(".resizeHandle");
-
-  resizeHandle.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-    card.classList.add("dragging");
-    const startX = e.clientX;
-    const startWidth = pos.width;
-    const onMove = ev=>{
-      const delta = (ev.clientX - startX) * 0.12;
-      pos.width = Math.max(60, startWidth + delta);
-      card.style.width = `calc(var(--ui-scale) * ${pos.width}px)`;
-      refreshLayoutOutput();
-    };
-    const onUp = ()=>{
-      card.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  card.addEventListener("pointerdown", e=>{
-    if(!editMode || e.target === resizeHandle) return;
-    e.preventDefault();
-    card.classList.add("dragging");
-    const layer = document.getElementById("charLayer");
-    const rect = layer.getBoundingClientRect();
-    const onMove = ev=>{
-      let x = ((ev.clientX - rect.left) / rect.width) * 100;
-      let y = ((ev.clientY - rect.top) / rect.height) * 100;
-      pos.x = Math.max(0, Math.min(100, x));
-      pos.y = Math.max(0, Math.min(100, y));
-      card.style.left = pos.x + "%";
-      card.style.top = pos.y + "%";
-    };
-    const onUp = ()=>{
-      card.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-      refreshLayoutOutput();
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  card.addEventListener("wheel", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    pos.width = Math.max(30, pos.width + (e.deltaY < 0 ? 8 : -8));
-    card.style.width = `calc(var(--ui-scale) * ${pos.width}px)`;
-    refreshLayoutOutput();
-  }, { passive:false });
-
+  card.addEventListener("click", () => openBalloon(c));
   return card;
 }
 
@@ -308,7 +114,7 @@ function balloonOverlay(){
   return document.getElementById("balloonOverlay");
 }
 
-/* Balloon sizing is now fully manual: the balloon is a fixed size/shape
+/* Balloon sizing is fully manual: the balloon is a fixed size/shape
    (set in styles-mobile.css) for every character, and each character's
    balloonFontSizeMobile (characters-data.js) is applied exactly as
    given — nothing measures, shrinks, or grows automatically. If a
@@ -685,6 +491,6 @@ function initSite(){
   initMusic();
   attemptAutoplay();
   initShootingStars();
-  initDraggableTitle();
-  refreshLayoutOutput();
+  applyTitlePosition();
 }
+
