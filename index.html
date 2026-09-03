@@ -11,8 +11,8 @@
      matching on the <link> tag itself — no JS involved, so this can't
      ever pick the wrong file or race against anything. Desktop only
      ever downloads/applies styles.css; mobile only styles-mobile.css. -->
-<link rel="stylesheet" href="styles.css?v=8" media="(min-width: 481px)">
-<link rel="stylesheet" href="styles-mobile.css?v=8" media="(max-width: 480px)">
+<link rel="stylesheet" href="styles.css?v=9" media="(min-width: 481px)">
+<link rel="stylesheet" href="styles-mobile.css?v=9" media="(max-width: 480px)">
 </head>
 <body>
 
@@ -29,28 +29,16 @@
   <!-- ============ MAIN SITE ============ -->
   <div id="site">
     <button id="musicBtn" title="Play music">🎵</button>
-    <button id="editModeBtn" title="Toggle position-editing mode">🖐️</button>
     <audio id="bgMusic" loop preload="none"></audio>
 
     <h1 id="hbTitle">Happy Birthday!</h1>
-    <div class="resizeHandle" id="titleResizeHandle" aria-hidden="true">↕</div>
     <img id="moonDecor" src="images/oreo_moon.png" alt="" aria-hidden="true"
          onerror="this.style.display='none'">
-    <div class="resizeHandle" id="moonResizeHandle" aria-hidden="true">↕</div>
 
     <div id="charLayer"></div>
 
     <div id="grass"></div>
     <div id="animalBubble"></div>
-
-    <div id="layoutPanel">
-      <div id="layoutPanelHeader">Layout Editor <button id="layoutMinBtn">➖</button></div>
-      <div id="layoutPanelBody">
-        <div id="layoutHint">Drag a character (or the title) to move · scroll over a character to resize · click to bring to front</div>
-        <pre id="layoutOutput"></pre>
-        <button id="copyLayoutBtn">Copy layout code</button>
-      </div>
-    </div>
 
     <footer>made by your eyesonMe 💕</footer>
 
@@ -66,7 +54,7 @@
     </div>
   </div>
 
-<script src="characters-data.js?v=8"></script>
+<script src="characters-data.js?v=9"></script>
 <script>
   /* Same device decision as the CSS above, made once here too, since a
      <script src> can't be conditionally selected with a media attribute
@@ -79,7 +67,7 @@
   (function loadDeviceScript(){
     var isMobile = window.matchMedia("(max-width: 480px)").matches;
     var s = document.createElement("script");
-    s.src = (isMobile ? "script-mobile.js" : "script.js") + "?v=8";
+    s.src = (isMobile ? "script-mobile.js" : "script.js") + "?v=9";
     document.body.appendChild(s);
   })();
 </script>
