@@ -1,3 +1,4 @@
+
 /* ======================================================================
    DESKTOP-ONLY SCRIPT. Mobile has its own separate script-mobile.js —
    editing this file never affects the mobile layout, and vice versa.
@@ -22,12 +23,9 @@ const LAYOUT_DESKTOP = {
 };
 const LAYOUT = LAYOUT_DESKTOP;
 
-// Placeholder slot for a future decoration (e.g. "moon" image) — position
-// and size are fully manual, same idea as the characters: x/y are the
-// center as a % of the screen, width in px (same --ui-scale reference as
-// character widths). Once images/moon.png exists, use 🖐️ edit mode to
-// drag it into place and drag its handle to resize, then "Copy layout
-// code" to lock in the final numbers here.
+// Final position/size of the moon decoration. No longer interactively
+// editable — to move or resize it later, just change these numbers
+// directly and re-upload.
 const MOON_DESKTOP = { x: 81.8, y: 12.0, width: 140 };
 
 const ANIMALS = [
@@ -59,52 +57,6 @@ function tryUnlock(){
   }
 }
 
-let editMode = false;
-let zCounter = 20;
-
-document.getElementById("editModeBtn").addEventListener("click", ()=>{
-  editMode = !editMode;
-  document.getElementById("editModeBtn").classList.toggle("active", editMode);
-  const panel = document.getElementById("layoutPanel");
-  panel.classList.toggle("show", editMode);
-  if(editMode) panel.classList.remove("collapsed");
-  document.querySelectorAll(".charCard").forEach(c => c.classList.toggle("editable", editMode));
-  document.getElementById("moonDecor").classList.toggle("editable", editMode);
-  refreshLayoutOutput();
-});
-
-document.getElementById("layoutMinBtn").addEventListener("click", ()=>{
-  const panel = document.getElementById("layoutPanel");
-  const collapsing = !panel.classList.contains("collapsed");
-  panel.classList.toggle("collapsed", collapsing);
-  document.getElementById("layoutMinBtn").textContent = collapsing ? "➕" : "➖";
-});
-
-document.getElementById("copyLayoutBtn").addEventListener("click", ()=>{
-  const text = document.getElementById("layoutOutput").textContent;
-  navigator.clipboard?.writeText(text);
-  const btn = document.getElementById("copyLayoutBtn");
-  const original = btn.textContent;
-  btn.textContent = "Copied!";
-  setTimeout(()=>{ btn.textContent = original; }, 1200);
-});
-
-function refreshLayoutOutput(){
-  const lines = Object.keys(LAYOUT).map(key=>{
-    const p = LAYOUT[key];
-    return ` "${key}": { x: ${p.x.toFixed(1)}, y: ${p.y.toFixed(1)}, width: ${Math.round(p.width)}, z: ${p.z} },`;
-  });
-  document.getElementById("layoutOutput").textContent =
-`// Replace the body of the existing "const LAYOUT_DESKTOP = {...}" object
-// in script.js with these lines.
-const LAYOUT_DESKTOP = {
-${lines.join("\n")}
-};
-
-// Replace the existing "const MOON_DESKTOP = {...}" line with this one.
-const MOON_DESKTOP = { x: ${MOON_DESKTOP.x.toFixed(1)}, y: ${MOON_DESKTOP.y.toFixed(1)}, width: ${Math.round(MOON_DESKTOP.width)} };`;
-}
-
 function applyPosition(card, pos){
   card.style.left = pos.x + "%";
   card.style.top = pos.y + "%";
@@ -119,78 +71,9 @@ function makeCard(c){
   card.innerHTML = `
     <img src="images/${c.img}" alt="${c.name}"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-    <div class="charFallback" style="background:${c.color}">${c.name}</div>
-    <div class="resizeHandle" aria-hidden="true">↕</div>`;
+    <div class="charFallback" style="background:${c.color}">${c.name}</div>`;
   applyPosition(card, pos);
-
-  card.addEventListener("click", e=>{
-    if(editMode){
-      e.stopPropagation();
-      zCounter++;
-      pos.z = zCounter;
-      card.style.zIndex = pos.z;
-      refreshLayoutOutput();
-      return;
-    }
-    openBalloon(c);
-  });
-
-  const resizeHandle = card.querySelector(".resizeHandle");
-
-  resizeHandle.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-    card.classList.add("dragging");
-    const startX = e.clientX;
-    const startWidth = pos.width;
-    const onMove = ev=>{
-      const delta = (ev.clientX - startX) * 0.12;
-      pos.width = Math.max(60, startWidth + delta);
-      card.style.width = `calc(var(--ui-scale) * ${pos.width}px)`;
-      refreshLayoutOutput();
-    };
-    const onUp = ()=>{
-      card.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  card.addEventListener("pointerdown", e=>{
-    if(!editMode || e.target === resizeHandle) return;
-    e.preventDefault();
-    card.classList.add("dragging");
-    const layer = document.getElementById("charLayer");
-    const rect = layer.getBoundingClientRect();
-    const onMove = ev=>{
-      let x = ((ev.clientX - rect.left) / rect.width) * 100;
-      let y = ((ev.clientY - rect.top) / rect.height) * 100;
-      pos.x = Math.max(0, Math.min(100, x));
-      pos.y = Math.max(0, Math.min(100, y));
-      card.style.left = pos.x + "%";
-      card.style.top = pos.y + "%";
-    };
-    const onUp = ()=>{
-      card.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-      refreshLayoutOutput();
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  card.addEventListener("wheel", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    pos.width = Math.max(30, pos.width + (e.deltaY < 0 ? 8 : -8));
-    card.style.width = `calc(var(--ui-scale) * ${pos.width}px)`;
-    refreshLayoutOutput();
-  }, { passive:false });
-
+  card.addEventListener("click", () => openBalloon(c));
   return card;
 }
 
@@ -542,79 +425,13 @@ function initShootingStars(){
   setInterval(spawnShootingStar, 25000);
 }
 
-/* ---------- draggable + resizable "moon" decoration slot ----------
-   Same interaction pattern as characters: drag the image to move it,
-   drag its little handle to resize it. Works right now even without
-   images/moon.png existing yet — the <img> just stays invisible
-   (onerror hides it in the HTML) until that file is added, but its
-   position/size are still fully editable and saved via "Copy layout
-   code" in the meantime. */
-function positionMoonResizeHandle(){
-  const moon = document.getElementById("moonDecor");
-  const handle = document.getElementById("moonResizeHandle");
-  const rect = moon.getBoundingClientRect();
-  handle.style.left = (rect.right - 8) + "px";
-  handle.style.top = (rect.bottom - 8) + "px";
-}
-
+/* Moon decoration — position/size locked in from MOON_DESKTOP above.
+   No longer interactively draggable/resizable. */
 function applyMoonPosition(){
   const moon = document.getElementById("moonDecor");
   moon.style.left = MOON_DESKTOP.x + "%";
   moon.style.top = MOON_DESKTOP.y + "%";
   moon.style.width = `calc(var(--ui-scale) * ${MOON_DESKTOP.width}px)`;
-  positionMoonResizeHandle();
-}
-
-function initMoonEditing(){
-  const moon = document.getElementById("moonDecor");
-  const handle = document.getElementById("moonResizeHandle");
-  applyMoonPosition();
-
-  moon.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    moon.classList.add("dragging");
-    const onMove = ev=>{
-      const x = Math.max(0, Math.min(100, (ev.clientX / window.innerWidth) * 100));
-      const y = Math.max(0, Math.min(100, (ev.clientY / window.innerHeight) * 100));
-      MOON_DESKTOP.x = x;
-      MOON_DESKTOP.y = y;
-      moon.style.left = x + "%";
-      moon.style.top = y + "%";
-      positionMoonResizeHandle();
-    };
-    const onUp = ()=>{
-      moon.classList.remove("dragging");
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-      refreshLayoutOutput();
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  handle.addEventListener("pointerdown", e=>{
-    if(!editMode) return;
-    e.preventDefault();
-    e.stopPropagation();
-    const startX = e.clientX;
-    const startWidth = MOON_DESKTOP.width;
-    const onMove = ev=>{
-      const delta = (ev.clientX - startX) * 0.4;
-      MOON_DESKTOP.width = Math.max(30, startWidth + delta);
-      moon.style.width = `calc(var(--ui-scale) * ${MOON_DESKTOP.width}px)`;
-      positionMoonResizeHandle();
-      refreshLayoutOutput();
-    };
-    const onUp = ()=>{
-      document.removeEventListener("pointermove", onMove);
-      document.removeEventListener("pointerup", onUp);
-    };
-    document.addEventListener("pointermove", onMove);
-    document.addEventListener("pointerup", onUp);
-  });
-
-  window.addEventListener("resize", positionMoonResizeHandle);
 }
 
 function initSite(){
@@ -627,6 +444,6 @@ function initSite(){
   initMusic();
   attemptAutoplay();
   initShootingStars();
-  initMoonEditing();
-  refreshLayoutOutput();
+  applyMoonPosition();
 }
+
